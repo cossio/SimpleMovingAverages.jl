@@ -1,7 +1,15 @@
 name: CI
+# push is scoped to master (plus tags) so PR branches run each job once, via the
+# pull_request event, instead of twice. workflow_dispatch exists because merges
+# performed by Actions with GITHUB_TOKEN (e.g. Dependabot auto-merge) do not
+# trigger workflows, leaving master's HEAD without a CI run until the next push.
 on:
-  - push
-  - pull_request
+  push:
+    branches:
+      - master
+    tags: ['*']
+  pull_request:
+  workflow_dispatch:
 jobs:
   test:
     name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }}
